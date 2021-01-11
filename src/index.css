@@ -1,8 +1,23 @@
+html {
+  height: 100%;
+  box-sizing: border-box;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+
 body {
+  position: relative;
   margin: 0;
+  padding-bottom: 6rem;
   font-family: 'Lobster','Open Sans Condensed','Roboto', 'Oxygen', 'Noto Sans TC',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
+  min-height: 100%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

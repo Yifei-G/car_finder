@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
         root:{
             display:"flex",
             flexWrap:"wrap",
+            justifyContent:'center',
         }
     });
 

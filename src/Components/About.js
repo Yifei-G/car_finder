@@ -2,7 +2,6 @@ import Typography from '@material-ui/core/Typography';
 import { Container } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import {aboutTitle, aboutText} from '../Style/aboutStyle.js';
-
 export default function About(){
     const titleStyle = aboutTitle();
     const textStyle = aboutText();
@@ -26,11 +25,15 @@ export default function About(){
                 
             </Typography>
 
-            <Typography className={textStyle.root}>
+            <Typography className={textStyle.root} paragraph>
             All the web components are based on <Link href='https://material-ui.com/getting-started/installation/' target="_blank" rel="noopener">Material-UI</Link>, a REACT implementation of Google's Material Design Style.
+            The Page routing management is based on <Link href='https://reactrouter.com/core/guides/quick-start' target="_blank" rel="noopener">react-router-dom</Link> library.
+            </Typography>
+
+            <Typography className={textStyle.root} paragraph>
+                You can check the source code of this project in this <Link href='https://github.com/Yifei-G/car_finder' target="_blank" rel="noopener">repository.</Link>
             </Typography>
         </Container>
-           
         </>
     );
 }

@@ -1,9 +1,9 @@
 import {BrowserRouter, Switch, Route} from "react-router-dom"
 import './App.css';
 import CarList from './Components/CarList.js';
-import NavMenu from './Components/navMenu.js';
+import NavMenu from './Components/NavMenu.js';
 import About from './Components/About.js';
-
+import Footer from './Components/Footer.js';
 function App() {
   return (
     <>
@@ -19,6 +19,7 @@ function App() {
           </Route>
         </Switch>
       </main>
+      <Footer />
     </BrowserRouter>
   </>
   );
