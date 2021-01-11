@@ -13,7 +13,7 @@ export default function NavMenu(){
 
     return(
         <>
-        <AppBar position="static">
+        <AppBar position="sticky">
             <Toolbar variant="dense">
                 <Typography variant="h2" className={appTitleStyle.h2}>
                         Car finder

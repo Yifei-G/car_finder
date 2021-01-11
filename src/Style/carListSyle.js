@@ -25,5 +25,4 @@ import { makeStyles } from '@material-ui/core/styles';
         }
     });
 
-    
 export{carContiner, carCardStyle};
