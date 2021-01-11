@@ -30,7 +30,6 @@ export default function CarList(){
 return (
     <>
     <Container component="div" maxWidth="lg">
-    {carList && <p>You have {carList.length} cars!!!</p>}
     <ul className={containerClass.root}>
     {carList && carList.map((car,index) => 
     <Card key={car.ID} className={cardClass.root} variant="outlined">
