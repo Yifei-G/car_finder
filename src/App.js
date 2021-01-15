@@ -4,6 +4,7 @@ import CarList from './Components/CarList.js';
 import NavMenu from './Components/NavMenu.js';
 import About from './Components/About.js';
 import Footer from './Components/Footer.js';
+import CarDetails from './Components/CarDetails.js';
 function App() {
   return (
     <>
@@ -11,11 +12,17 @@ function App() {
       <NavMenu />
       <main>
         <Switch>
+          <Route exact path="/">
+            <About />
+          </Route>
           <Route exact path="/about">
             <About />
           </Route>
           <Route exact path='/car/all'>
             <CarList />
+          </Route>
+          <Route exact path='/car/:id/detail'>
+            <CarDetails />
           </Route>
         </Switch>
       </main>

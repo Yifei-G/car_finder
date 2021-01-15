@@ -24,12 +24,13 @@ export default function CarList(){
                 setCarList(data.carList);
             }
         })();
-    },[])
+    },[]);
 
 
 return (
     <>
     <Container component="div" maxWidth="lg">
+
     <ul className={containerClass.root}>
     {carList && carList.map((car,index) => 
     <Card key={car.ID} className={cardClass.root} variant="outlined">

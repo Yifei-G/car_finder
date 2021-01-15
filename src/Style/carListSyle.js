@@ -13,8 +13,12 @@ import { makeStyles } from '@material-ui/core/styles';
             marginRight:"1em",
             borderColor:"blue",
         },
+        h4:{
+            fontFamily:'lobster',
+            margin:'1rem 0'
+        },
         h5:{
-            fontFamily:'Noto Sans TC',
+            fontFamily:'lobster',
             fontWeight:"bold",
         },
         h6:{

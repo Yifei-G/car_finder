@@ -12,8 +12,9 @@ const appTitle = makeStyles(theme => ({
     h2:{
         fontFamily:'Lobster',
         fontStyle:'oblique',
-        [theme.breakpoints.down('md')]:{
-            fontSize:'1rem',
+        display:'block ruby',
+        [theme.breakpoints.down('sm')]:{
+            fontSize:'1.1rem',
         },
     }
 }));
