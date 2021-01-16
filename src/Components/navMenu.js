@@ -31,7 +31,7 @@ export default function NavMenu(){
                     </Typography>
                 </NavLink>
 
-                <NavLink to='/' activeClassName='menu-link-active'>
+                <NavLink to='/car/create' className='menu-link' activeClassName='menu-link-active'>
                     <Typography variant="h6" className={linkStyle.h6}>
                             New Car
                     </Typography>

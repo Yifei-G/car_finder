@@ -10,7 +10,7 @@ export default function useFetch(baseUrl){
                 try{
                     const response = await fetch(baseUrl + url);
                     const data = await response.json();
-                    if( !data){
+                    if(!data){
                         return reject(data);
                     }
                     resolve(data);
@@ -23,6 +23,33 @@ export default function useFetch(baseUrl){
         });
     }
 
+    function update(url,httpBody){
+        const httpHeaders = {
+            "Content-Type": "application/json"
+        }
+        return new Promise((resolve,reject)=>{
+            (async () =>{
+                try{
+                    const response = await fetch(baseUrl + url,{
+                        method:'PUT',
+                        headers: httpHeaders,
+                        body:JSON.stringify(httpBody)
+                    });
 
-    return {get}
+                    const data = await response.json();
+                    if((!data) || (data.message)){
+                        return reject(data);
+                    }
+                    resolve(data);
+                }
+                catch(error){
+                    console.log(error);
+                    reject(error);
+                }
+            })();
+        })
+    }
+
+
+    return {get, update}
 }
