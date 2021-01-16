@@ -1,17 +1,25 @@
 import React from "react";
 import {useState, useEffect} from "react";
 import useFetch from "../Utils/useFetch.js";
-import{useRouteMatch} from 'react-router-dom';
+import{useRouteMatch,useHistory} from 'react-router-dom';
 import Box from '@material-ui/core/Box';
+import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import CreateIcon from '@material-ui/icons/Create';
 import SaveIcon from '@material-ui/icons/Save';
+import DeleteIcon from '@material-ui/icons/Delete';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import {carCardStyle} from "../Style/carListSyle.js";
+import{btnContainer} from '../Style/carDetailsStyle.js'
 import CarForm from './CarForm.js';
 export default function CarDetails(){
     const baseURL = 'http://localhost:30000/';
@@ -22,13 +30,18 @@ export default function CarDetails(){
         productYear: null
     });
     const [canEdit,setCanEdit] = useState(false);
-    const [updateCmpted, setupdateCmpted] = useState(false);
+    const [requestCmpted, setRequestCmpted] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [alertMsg, setAlertMsg] = useState("");
+    const [severity, setSeverity] = useState({})
+    const [redirect, setRedirect] = useState(false);
+    const [deleteDialog, setDeleteDialog] = useState(false);
     const routeObj = useRouteMatch();
+    const pathObj = useHistory();
     const requestID = routeObj.params.id;
     const cardClass = carCardStyle();
-    const {get} = useFetch(baseURL);
-    const {update} = useFetch(baseURL);
+    const contanerClass = btnContainer();
+    const {get,update,errase} = useFetch(baseURL);
 
     useEffect(()=>{
         (async() =>{
@@ -80,11 +93,37 @@ export default function CarDetails(){
             const data = await update(`car/${requestID}/update`,updatedCar);
             if(data.modifiedCar){
                 setCar(data.modifiedCar);
-                setupdateCmpted(true);
+
+                //dynamically change Alert component message and severity
+                setSeverity({...severity, level:'success'});
+                setAlertMsg('Updated successfully!');
+                setRequestCmpted(true);
             }
             else{
                 console.log(data);
-                setupdateCmpted(true);
+                //dynamically change Alert component message and severity
+                setSeverity({...severity, level:'error'});
+                setAlertMsg('Opss..Something went wrong!');
+                setRequestCmpted(true);
+            }
+        })();  
+    }
+
+
+    const handleCarDltClick = ()=>{
+        (async()=>{
+            const data = await errase(`car/${requestID}/delete`);
+            if(data.message){
+                setSeverity({...severity, level:'success'});
+                setAlertMsg('Deleted successfully!');
+                setRedirect(true);
+                setRequestCmpted(true);
+            }
+            else{
+                console.log(data);
+                setSeverity({...severity, level:'error'});
+                setAlertMsg('Opss..Something went wrong!');
+                setRequestCmpted(true);
             }
         })();  
     }
@@ -93,8 +132,12 @@ export default function CarDetails(){
         if (reason === 'clickaway') {
           return;
         }
-    
-        setupdateCmpted(false);
+        setRequestCmpted(false);
+        //Only redirect the page, when user delete a car
+        if(redirect){
+            pathObj.push('/car/all');
+        }
+        
       };
 
     return (
@@ -128,21 +171,57 @@ export default function CarDetails(){
             }
             
 
-            <Snackbar anchorOrigin={{vertical:'bottom', horizontal: 'left'}} open={updateCmpted} autoHideDuration={2000} onClose={handleClose}>
-                <MuiAlert  severity="success" elevation={10} variant="filled">
-                    Updated successfully
+            <Snackbar anchorOrigin={{vertical:'bottom', horizontal: 'left'}} open={requestCmpted} autoHideDuration={1000} onClose={handleClose}>
+                <MuiAlert  severity={severity.level} elevation={10} variant="filled">
+                    {alertMsg}
                 </MuiAlert>
             </Snackbar>
 
-            <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<SaveIcon />}
-                    disabled={(!canEdit) || (!car.carBrand) || (!car.carModel)}
-                    onClick={handleCarUptClick}
-                    >
-                    Update
-            </Button>
+            <Container maxWidth='sm' className={contanerClass.root}>
+                <Button
+                        variant="contained"
+                        color="secondary"
+                        startIcon={<DeleteIcon />}
+                        disabled={(!canEdit) || (!car.carBrand) || (!car.carModel)}
+                        onClick={() =>setDeleteDialog(true)}
+                        >
+                        Delete
+                </Button>
+
+                <Button
+                        variant="contained"
+                        color="primary"
+                        startIcon={<SaveIcon />}
+                        disabled={(!canEdit) || (!car.carBrand) || (!car.carModel)}
+                        onClick={handleCarUptClick}
+                        >
+                        Update
+                </Button>
+            </Container>
+
+            <Dialog
+                open={deleteDialog}
+                onClose={()=> setDeleteDialog(false)}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">{"Delete this Car?"}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        Please confirm that you want to remove this Car from the App?
+                    </DialogContentText>
+                </DialogContent>
+            <DialogActions>
+                <Button onClick={()=> setDeleteDialog(false)} color="primary">
+                    Cancel
+                </Button>
+                <Button onClick={handleCarDltClick} color="secondary" autoFocus>
+                    Confirm
+                </Button>
+            </DialogActions>
+        </Dialog>
+
+           
         </Box>
         </>
     )

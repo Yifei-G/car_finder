@@ -5,6 +5,7 @@ import NavMenu from './Components/NavMenu.js';
 import About from './Components/About.js';
 import Footer from './Components/Footer.js';
 import CarDetails from './Components/CarDetails.js';
+import CreateCar from './Components/CreateCar.js';
 function App() {
   return (
     <>
@@ -23,6 +24,9 @@ function App() {
           </Route>
           <Route exact path='/car/:id/detail'>
             <CarDetails />
+          </Route>
+          <Route exact path='/car/create'>
+            <CreateCar />
           </Route>
         </Switch>
       </main>
