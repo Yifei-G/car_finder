@@ -1,5 +1,5 @@
 import React from "react";
-import {useState, useEffect} from "react";
+import {useState, useLayoutEffect} from "react";
 import useFetch from "../Utils/useFetch.js";
 import {Link} from "react-router-dom";
 import Container from '@material-ui/core/Container';
@@ -16,7 +16,7 @@ export default function CarList(){
     const containerClass = carContiner();
     const cardClass = carCardStyle();
     const {get} = useFetch("http://localhost:30000/");
-    useEffect(()=>{
+    useLayoutEffect(()=>{
         (async() =>{
             const data = await get('car/all');
             if(data){

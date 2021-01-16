@@ -23,6 +23,34 @@ export default function useFetch(baseUrl){
         });
     }
 
+    function create(url,httpBody){
+        const httpHeaders = {
+            "Content-Type": "application/json",
+        }
+        return new Promise((resolve,reject)=>{
+            (async () =>{
+                try{
+                    const response = await fetch(baseUrl + url,{
+                        method:'POST',
+                        headers: httpHeaders,
+                        body:JSON.stringify(httpBody)
+                    });
+
+                    const data = await response.json();
+                    if((!data) || (data.message)){
+                        return reject(data);
+                    }
+                    resolve(data);
+                }
+                catch(error){
+                    console.log(error);
+                    reject(error);
+                }
+            })();
+        });
+
+    }
+
     function update(url,httpBody){
         const httpHeaders = {
             "Content-Type": "application/json"
@@ -47,9 +75,32 @@ export default function useFetch(baseUrl){
                     reject(error);
                 }
             })();
-        })
+        });
     }
 
+    function errase(url){
+        return new Promise((resolve,reject) =>{
+            (async () =>{
+                try{
+                    const response = await fetch(baseUrl + url,{
+                        method:'DELETE',
+                    });
+                    const data = await response.json();
+                    if(!data){
+                        return reject(data);
+                    }
+                    resolve(data);
+                }
+                catch(error){
+                    console.log(error);
+                    reject(error);
+                }
+            })();
+        });
+    }
 
-    return {get, update}
+    
+
+
+    return {get, update, create,errase}
 }
