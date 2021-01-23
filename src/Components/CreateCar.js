@@ -20,7 +20,7 @@ export default function CreateCar(){
         productYear: null
     });
 
-    const {create} = useFetch(baseURL);
+    const {post} = useFetch(baseURL);
     
     const pathObj = useHistory();
 
@@ -56,7 +56,7 @@ export default function CreateCar(){
         };
 
         (async()=>{
-            const data = await create(`car/create`,newCar);
+            const data = await post(`car/create`,newCar);
             if(data.newCar){
                 setCar({
                     carBrand: 'Car brand...',

@@ -23,7 +23,7 @@ export default function useFetch(baseUrl){
         });
     }
 
-    function create(url,httpBody){
+    function post(url,httpBody){
         const httpHeaders = {
             "Content-Type": "application/json",
         }
@@ -102,5 +102,5 @@ export default function useFetch(baseUrl){
     
 
 
-    return {get, update, create,errase}
+    return {get, update, post,errase}
 }

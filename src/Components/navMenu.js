@@ -37,7 +37,7 @@ export default function NavMenu(){
                     </Typography>
                 </NavLink>
 
-                <NavLink to='/' activeClassName='menu-link-active'>
+                <NavLink to='/user/me' className='menu-link' activeClassName='menu-link-active'>
                     <Typography variant="h6" className={linkStyle.h6}>
                         My Profile
                     </Typography>

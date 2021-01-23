@@ -6,27 +6,36 @@ import About from './Components/About.js';
 import Footer from './Components/Footer.js';
 import CarDetails from './Components/CarDetails.js';
 import CreateCar from './Components/CreateCar.js';
+import Login from './Components/Login.js';
+import Profile from './Components/Profile.js';
 function App() {
   return (
     <>
     <BrowserRouter>
-      <NavMenu />
       <main>
         <Switch>
           <Route exact path="/">
-            <About />
+            <Login />
           </Route>
           <Route exact path="/about">
+            <NavMenu />
             <About />
           </Route>
           <Route exact path='/car/all'>
+            <NavMenu />
             <CarList />
           </Route>
           <Route exact path='/car/:id/detail'>
+            <NavMenu />
             <CarDetails />
           </Route>
           <Route exact path='/car/create'>
+            <NavMenu />
             <CreateCar />
+          </Route>
+          <Route exact path="/user/me">
+            <NavMenu />
+            <Profile />
           </Route>
         </Switch>
       </main>
