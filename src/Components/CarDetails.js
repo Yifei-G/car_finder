@@ -41,8 +41,7 @@ export default function CarDetails(){
     const requestID = routeObj.params.id;
     const cardClass = carCardStyle();
     const contanerClass = btnContainer();
-    const {get,update,errase} = useFetch(baseURL);
-
+    const {get,update,errase} = useFetch(baseURL);  
     useEffect(()=>{
         (async() =>{
             const data = await get(`car/${requestID}/detail`);

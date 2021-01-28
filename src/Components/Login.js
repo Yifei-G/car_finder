@@ -90,10 +90,11 @@ export default function Login(){
     }
 
     if(userProfile){
-        //pathObj.push('/user/me');
+        
         //let's save the user profile information into the local storage
         //as a temp workaround
-        localStorage.setItem('userObj', JSON.stringify(userProfile))
+        localStorage.setItem('userID', JSON.stringify(userProfile.user.ID));
+        pathObj.push('/user/me');
         return(
             <>
                 <Profile userObj={userProfile}/>

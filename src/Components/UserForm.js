@@ -16,10 +16,18 @@ import Link from '@material-ui/core/Link';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Typography from '@material-ui/core/Typography';
+import IconButton from '@material-ui/core/IconButton';
+import DeleteIcon from '@material-ui/icons/Delete';
 import {carCardStyle} from "../Style/carListSyle.js";
 
 export default function UserForm(props){
-    const {canEdit, userGender, userFirstName, userLastName, userEmail, carList} = props
+    const {canEdit, userGender, userFirstName, 
+        userLastName, userEmail, carList, 
+        onFirstNameChange, onLastNameChange,
+        onGenderChange, onEmailChange,
+        onRepeatEmailChange,
+        validation, errorMsg
+    } = props
     const cardClass = carCardStyle();
     return(
         <>
@@ -27,13 +35,12 @@ export default function UserForm(props){
             <FormGroup autoComplete="off">
                 <Grid  container direction="column" justify='space-around' alignItems="center" alignItems="stretch">
                     <FormLabel component="legend">Gender:</FormLabel>
-                        <RadioGroup row aria-label="position" name="position" defaultValue="top">
+                        <RadioGroup row aria-label="position" onChange={onGenderChange} value={userGender} name="position" defaultValue="top">
                             <FormControlLabel
                                 value="Male"
                                 control={<Radio color="primary" />}
                                 label="Male"
                                 labelPlacement="start"
-                                checked={userGender === "Male"}
                                 disabled={!canEdit}
                             />
 
@@ -42,34 +49,33 @@ export default function UserForm(props){
                                 control={<Radio color="primary" />}
                                 label="Female"
                                 labelPlacement="start"
-                                checked={userGender === "Female"}
                                 disabled={!canEdit}
                             />
                         </RadioGroup>
-                    <FormControl variant="outlined" margin='normal'>
+                    <FormControl variant="outlined" margin='normal' error={!userFirstName}>
                             <InputLabel htmlFor="input-fistName">First name:</InputLabel>
-                            <OutlinedInput id="input-fistName" disabled={!canEdit} value={userFirstName} label="First name:"/>
-                            { canEdit && <FormHelperText id="input-fistName-error-text">The field is requiered!</FormHelperText>}
+                            <OutlinedInput id="input-fistName" disabled={!canEdit} onChange={onFirstNameChange} value={userFirstName} label="First name:"/>
+                            { (!userFirstName) && <FormHelperText id="input-fistName-error-text">The field is requiered!</FormHelperText>}
                     </FormControl>
 
-                    <FormControl variant="outlined" margin='normal'>
+                    <FormControl variant="outlined" margin='normal' error={!userLastName}>
                             <InputLabel htmlFor="input-lastName">Last name:</InputLabel>
-                            <OutlinedInput id="input-lastName" disabled={!canEdit} value={userLastName}  label="Last name:"/>
-                            { (canEdit) && <FormHelperText id="input-lastName-error-text">The field is requiered!</FormHelperText>}
+                            <OutlinedInput id="input-lastName" disabled={!canEdit} onChange={onLastNameChange} value={userLastName}  label="Last name:"/>
+                            { (!userLastName) && <FormHelperText id="input-lastName-error-text">The field is requiered!</FormHelperText>}
                     </FormControl>
 
 
-                    <FormControl variant="outlined" margin='normal'>
+                    <FormControl variant="outlined" margin='normal' error={(userEmail) && (!validation.validEmail)}>
                             <InputLabel htmlFor="input-email">Email*</InputLabel>
-                            <OutlinedInput id="input-email" disabled={!canEdit} type="email" value={userEmail} label="Email:" />
-                            { (canEdit) && <FormHelperText id="input-email-error-text">The field is requiered!</FormHelperText>}
+                            <OutlinedInput id="input-email" disabled={!canEdit} type="email" onChange={onEmailChange} value={userEmail} label="Email:" />
+                            { (!validation.validEmail) && <FormHelperText id="input-email-error-text">{errorMsg.emailError}</FormHelperText>}
                     </FormControl>
 
                     { (canEdit) &&
-                        <FormControl variant="outlined" margin='normal'>
+                        <FormControl variant="outlined" margin='normal' error={(!validation.validRepeatEmail)}>
                             <InputLabel htmlFor="input-confirm-email">Repeat Email*</InputLabel>
-                            <OutlinedInput id="input-confirm-email" type="email" label="Repeat Email:" />
-                            <FormHelperText id="input-confirm-email-error-text">The field is requiered!</FormHelperText>
+                            <OutlinedInput id="input-confirm-email" type="email" onChange={onRepeatEmailChange} label="Repeat Email:" />
+                            {(!validation.validRepeatEmail) && <FormHelperText id="input-confirm-email-error-text">{errorMsg.repeatEmailError}</FormHelperText>}
                         </FormControl>
                     }
 
@@ -108,6 +114,9 @@ export default function UserForm(props){
                                         <Link component={RouterLink} to={car.URL}>
                                             {car.fullName}
                                         </Link>
+                                        <IconButton disabled={!canEdit}>
+                                            <DeleteIcon />
+                                        </IconButton>
                                     </ListItem>
                                 )
                             }
