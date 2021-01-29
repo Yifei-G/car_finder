@@ -22,9 +22,11 @@ import {carCardStyle} from "../Style/carListSyle.js";
 
 export default function UserForm(props){
     const {canEdit, userGender, userFirstName, 
-        userLastName, userEmail, carList, 
+        userLastName, userEmail, defaultEmail,
+        userPassword, carList, 
         onFirstNameChange, onLastNameChange,
         onGenderChange, onEmailChange,
+        onPasswordChange, onRepeatPasswordChange,
         onRepeatEmailChange,
         validation, errorMsg
     } = props
@@ -65,13 +67,15 @@ export default function UserForm(props){
                     </FormControl>
 
 
-                    <FormControl variant="outlined" margin='normal' error={(userEmail) && (!validation.validEmail)}>
+                    <FormControl variant="outlined" margin='normal' error={(!userEmail) || (!validation.validEmail)}>
                             <InputLabel htmlFor="input-email">Email*</InputLabel>
                             <OutlinedInput id="input-email" disabled={!canEdit} type="email" onChange={onEmailChange} value={userEmail} label="Email:" />
                             { (!validation.validEmail) && <FormHelperText id="input-email-error-text">{errorMsg.emailError}</FormHelperText>}
                     </FormControl>
 
-                    { (canEdit) &&
+                    { 
+                        /* if user doesn't change the email field, then we don't show this text field */
+                        (userEmail != defaultEmail) &&
                         <FormControl variant="outlined" margin='normal' error={(!validation.validRepeatEmail)}>
                             <InputLabel htmlFor="input-confirm-email">Repeat Email*</InputLabel>
                             <OutlinedInput id="input-confirm-email" type="email" onChange={onRepeatEmailChange} label="Repeat Email:" />
@@ -81,27 +85,23 @@ export default function UserForm(props){
 
                     {
                         (canEdit) &&
-                        <FormControl variant="outlined" margin='normal' autoComplete="off">
+                        <FormControl variant="outlined" margin='normal' autoComplete="off" error={!validation.validPass}>
                             <InputLabel htmlFor="input-password">New Password*</InputLabel>
-                                    <OutlinedInput id="input-password" type="password" label="New Password:" autoComplete="new-password" />
-                                    <FormHelperText id="input-password-error-text">The field is requiered!</FormHelperText>
+                                    <OutlinedInput id="input-password" type="password" onChange={onPasswordChange} label="New Password:" autoComplete="new-password" />
+                                    {(!validation.validPass) && <FormHelperText id="input-password-error-text">{errorMsg.passwordError}</FormHelperText>}
                             </FormControl>
 
                     }
 
-
-
                     {
-                        (canEdit) &&
-                        <FormControl variant="outlined" margin='normal' autoComplete="off">
+                        (userPassword) &&
+                        <FormControl variant="outlined" margin='normal' autoComplete="off" error={(!validation.validRepeatPass)}>
                             <InputLabel htmlFor="input-confirm-password">Repeat Password*</InputLabel>
-                            <OutlinedInput id="input-confirm-password" type="password" label="Repeat Password:" autoComplete="new-password"/>
-                            <FormHelperText id="input-confirm-password-error-text">The field is requiered!</FormHelperText>
+                            <OutlinedInput id="input-confirm-password" type="password" onChange={onRepeatPasswordChange} label="Repeat Password:" autoComplete="new-password"/>
+                            {(!validation.validRepeatPass) && <FormHelperText id="input-confirm-password-error-text">{errorMsg.repeatPassError}</FormHelperText>}
                         </FormControl>
 
                     } 
-
-
 
                         <List aria-label="user car list">
                             <Typography variant='h4' className={cardClass.h4}>

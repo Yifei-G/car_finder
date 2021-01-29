@@ -42,7 +42,7 @@ export default function Login(){
 
     function verifyPass(password){
         //console.log((password.length > 8 ? true : false))
-        return (password.length > 8 ? true : false);
+        return (password.length >= 8 ? true : false);
     }
 
     function handleEmailChange(event){

@@ -47,12 +47,11 @@ export default function CarDetails(){
             const data = await get(`car/${requestID}/detail`);
             if(data.car){
                 setCar(data.car);
-                setLoading(false);
             }
             else{
                 console.log(data);
-                setLoading(false);
             }
+            setLoading(false);
         })();
     },[]);
 
