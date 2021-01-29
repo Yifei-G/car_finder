@@ -32,6 +32,7 @@ export default function Profile(props){
         validRepeatPass: false,
     });
     const [canEdit,setCanEdit] = useState(false);
+    const [canUpdate, setCanUpdate] = useState(false);
     const [loading, setLoading] = useState(true);
     const baseURL = 'http://localhost:30000/';
     const {get,update} = useFetch(baseURL);  
@@ -57,10 +58,9 @@ export default function Profile(props){
 
     //this useEffect runs erro verification checks
     useEffect(()=>{
-
         user.email ? setErrorMsg({...errorMsg, emailError:"Incorrect email format!"}) : setErrorMsg({...errorMsg, emailError:"This field is requiered!"});
-
-    },[user.email, user.password])
+        canUpdateUser();
+    },[user,repeatEmail])
 
     function verifyEmail(email){
         const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -86,16 +86,35 @@ export default function Profile(props){
     }
 
     function handleEmailChange(event){
-        setUser({...user, email:event.target.value});
+        setUser((preValue) =>{
+            return preValue = {...preValue, email:event.target.value}
+        });
         //validating email format
         const result = verifyEmail(event.target.value);
         //set the result to the validation state
-        setValidation({...validation, validEmail: result });
+        setValidation((preValue)=>{
+            return preValue = {...preValue, validEmail:result};
+        });
+
+        console.log("after the first setValidation",validation)
+        //state update is async
+        //so the latest email value is event.target.value
+        //we compare with the repeatEmail value to verify the validation
+        if(event.target.value === repeatEmail){
+            setValidation((preValue) =>{
+                return preValue = {...preValue, validRepeatEmail: true };
+            })
+        }else{
+            setValidation((preValue) =>{
+                return preValue = {...preValue, validRepeatEmail: false };
+            })
+        }
+
     }
 
     function handleRepeatEmailChange(event){
         setRepeatEmail(event.target.value);
-        user.email == event.target.value ? setValidation({...validation, validRepeatEmail: true }) : setValidation({...validation, validRepeatEmail: false });
+        user.email === event.target.value ? setValidation({...validation, validRepeatEmail: true }) : setValidation({...validation, validRepeatEmail: false });
         setErrorMsg({...errorMsg, repeatEmailError:"The email address doesn't match!!!"});
     }
 
@@ -110,8 +129,31 @@ export default function Profile(props){
 
     function handleRepeatPasswordChange(event){
         setRepeatPassword(event.target.value);
-        user.password == event.target.value ? setValidation({...validation, validRepeatPass: true }) : setValidation({...validation, validRepeatPass: false });
+        user.password === event.target.value ? setValidation({...validation, validRepeatPass: true }) : setValidation({...validation, validRepeatPass: false });
         setErrorMsg({...errorMsg, repeatPassError:"The password doesn't match!!!"});
+    }
+
+
+    function canUpdateUser(){
+        setCanUpdate(false);
+        if((user.email === defaultEmail) && !user.password ){
+            setCanUpdate(true)
+        }
+        else if((user.email !== defaultEmail) && !user.password ){
+            if((validation.validEmail) && (validation.validRepeatEmail)){
+                setCanUpdate(true)
+            }
+            
+
+        }else if((user.email === defaultEmail) && user.password){
+            setCanUpdate(validation.validRepeatPass)
+
+        }else if((user.email !== defaultEmail) && user.password){
+            if((validation.validRepeatEmail) && (validation.validRepeatPass)){
+                setCanUpdate(true)
+            }
+        }
+
     }
 
 
@@ -144,11 +186,14 @@ export default function Profile(props){
                         <IconButton onClick={handleEditClick}>
                             <CreateIcon />
                         </IconButton>
-                        <Button variant="contained" disabled={!canEdit} onClick={handleuserUpdateClick} startIcon={<SaveIcon />} color="primary">
+                        <Button variant="contained" 
+                        disabled={( (!canEdit) || (!user.firstName) || (!user.lastName) || (!user.email) || (!canUpdate) )} 
+                        onClick={handleuserUpdateClick} 
+                        startIcon={<SaveIcon />} 
+                        color="primary">
                             Update
                         </Button>
                     </Typography>
-
 
                     {
                         loading &&

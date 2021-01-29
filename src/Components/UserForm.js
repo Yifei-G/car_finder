@@ -75,7 +75,7 @@ export default function UserForm(props){
 
                     { 
                         /* if user doesn't change the email field, then we don't show this text field */
-                        (userEmail != defaultEmail) &&
+                        (userEmail !== defaultEmail) &&
                         <FormControl variant="outlined" margin='normal' error={(!validation.validRepeatEmail)}>
                             <InputLabel htmlFor="input-confirm-email">Repeat Email*</InputLabel>
                             <OutlinedInput id="input-confirm-email" type="email" onChange={onRepeatEmailChange} label="Repeat Email:" />
