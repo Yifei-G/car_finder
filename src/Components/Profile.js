@@ -10,7 +10,7 @@ import CreateIcon from '@material-ui/icons/Create';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import UserForm from './UserForm.js';
 import useFetch from "../Utils/useFetch.js";
-
+import {verifyEmail, verifyPass} from "../Utils/verification.js";
 export default function Profile(props){
     //geting user Object from localStorage
     const [user, setUser] = useState({
@@ -58,20 +58,24 @@ export default function Profile(props){
 
     //this useEffect runs erro verification checks
     useEffect(()=>{
-        user.email ? setErrorMsg({...errorMsg, emailError:"Incorrect email format!"}) : setErrorMsg({...errorMsg, emailError:"This field is requiered!"});
+        if(user.email){
+            setErrorMsg((preValue)=>{
+                return {...preValue, emailError:"Incorrect email format!"}
+            })
+        }else{
+            setErrorMsg((preValue)=>{
+                return {...preValue, emailError:"This field is requiered!"}
+            });
+        }
+
+        if(user.password){
+            setErrorMsg((preValue)=>{
+                return {...preValue, passwordError:"The password must be at least 8 characters!"}
+            });
+        }
+
         canUpdateUser();
-    },[user,repeatEmail])
-
-    function verifyEmail(email){
-        const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        //console.log(re.test(String(email).toLowerCase()));
-        return re.test(String(email).toLowerCase());
-    }
-
-    function verifyPass(password){
-        //console.log((password.length > 8 ? true : false))
-        return (password.length >= 8 ? true : false);
-    }
+    },[user,repeatEmail,repeatPassword])
 
     function handleFirstNameChange(event){
         setUser({...user, firstName: event.target.value})
@@ -89,15 +93,18 @@ export default function Profile(props){
         setUser((preValue) =>{
             return preValue = {...preValue, email:event.target.value}
         });
+
         //validating email format
         const result = verifyEmail(event.target.value);
         //set the result to the validation state
+        //state update is async
+        //let's update the validation state using a functional update
         setValidation((preValue)=>{
             return preValue = {...preValue, validEmail:result};
         });
 
-        console.log("after the first setValidation",validation)
         //state update is async
+        //let's update the validation state using a functional update
         //so the latest email value is event.target.value
         //we compare with the repeatEmail value to verify the validation
         if(event.target.value === repeatEmail){
@@ -122,34 +129,77 @@ export default function Profile(props){
         
         setUser({...user, password: event.target.value});
         //validating password length
-        const result = verifyPass(event.target.value);
+        let result = true;
+        if(event.target.value !== ""){
+            result = verifyPass(event.target.value);
+        }else{
+            //if user empty the password field
+            // we should also empty the repeat password field
+            setRepeatPassword((preValue) =>{
+                return preValue = event.target.value;
+            });
+        }
+        
         //set the result to the validation state
-        setValidation({...validation, validPass: result});
+        setValidation((preValue)=>{
+            return {...preValue, validPass: result}
+        });
+
+        if(event.target.value === repeatPassword){
+            setValidation((preValue) =>{
+                return preValue = {...preValue, validRepeatPass: true };
+            })
+        }else{
+            setValidation((preValue) =>{
+                return preValue = {...preValue, validRepeatPass: false };
+            })
+        }
     }
 
     function handleRepeatPasswordChange(event){
-        setRepeatPassword(event.target.value);
-        user.password === event.target.value ? setValidation({...validation, validRepeatPass: true }) : setValidation({...validation, validRepeatPass: false });
+        setRepeatPassword((preValue) =>{
+            return preValue = event.target.value;
+        });
+        if(user.password === event.target.value){
+            setValidation((preValue) =>{
+                return {...preValue, validRepeatPass: true }
+            })
+        }else{
+            setValidation((preValue) =>{
+                return {...preValue, validRepeatPass: false }
+            })
+        }
         setErrorMsg({...errorMsg, repeatPassError:"The password doesn't match!!!"});
     }
 
 
     function canUpdateUser(){
         setCanUpdate(false);
+        //user doesn't modify the email nor the password
         if((user.email === defaultEmail) && !user.password ){
             setCanUpdate(true)
         }
+        //user only modifying the email field
         else if((user.email !== defaultEmail) && !user.password ){
+            //we need to be sure that email is in the correct format
+            //the email field is the same as the repeat email field
             if((validation.validEmail) && (validation.validRepeatEmail)){
                 setCanUpdate(true)
             }
             
-
+        // user modifying the password field
         }else if((user.email === defaultEmail) && user.password){
-            setCanUpdate(validation.validRepeatPass)
+            //we need to be sure password is at least 8 characters
+            //the password is the same as the repeat password field
+            if((validation.validPass) && (validation.validRepeatPass) ){
+                setCanUpdate(true)
+            }
 
+        //user modifying the email and the password field  
         }else if((user.email !== defaultEmail) && user.password){
-            if((validation.validRepeatEmail) && (validation.validRepeatPass)){
+            // be sure of above cases 
+            if(((validation.validEmail) && (validation.validRepeatEmail)) 
+                && ((validation.validPass) && (validation.validRepeatPass)) ){
                 setCanUpdate(true)
             }
         }
@@ -159,19 +209,26 @@ export default function Profile(props){
 
 
     async function handleuserUpdateClick(){
-        let updatedUser = {
-            "firstName": user.firstName,
-            "lastName": user.lastName,
-            "email": user.email,
-            "gender": user.gender,
-            "car": [],
-        }
-        const data = await update(`users/${user.ID}/update`,updatedUser);
-        if(data.updatedUser){
-            console.log(data.updatedUser);
-        }
-        else{
-            console.log(data);
+
+        //let's do the update validation again
+        if(canUpdate){
+            let updatedUser = {
+                "firstName": user.firstName,
+                "lastName": user.lastName,
+                "email": user.email,
+                "gender": user.gender,
+                "car": [],
+            }
+            user.password ? updatedUser.password = user.password : updatedUser.password = undefined;
+            const data = await update(`users/${user.ID}/update`,updatedUser);
+            if(data.updatedUser){
+                console.log(data.updatedUser);
+            }
+            else{
+                console.log(data);
+            }
+        }else{
+            console.log("You can't update, check if the form is correct validated!")
         }
     }
 

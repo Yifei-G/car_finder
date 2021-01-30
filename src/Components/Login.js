@@ -13,8 +13,7 @@ import Button from '@material-ui/core/Button';
 import useFetch from "../Utils/useFetch.js";
 import {parentContainer, loginContainer, loginTitle} from "../Style/loginStyle.js";
 import Profile from "./Profile.js";
-import {UserProvider} from "../Utils/userContext.js";
-import {Switch, Route} from "react-router-dom";
+import {verifyEmail, verifyPass} from "../Utils/verification.js";
 
 
 export default function Login(){
@@ -34,38 +33,30 @@ export default function Login(){
     const loginCtnStyle = loginContainer();
     const titleStyle = loginTitle();
 
-    function verifyEmail(email){
-        const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        //console.log(re.test(String(email).toLowerCase()));
-        return re.test(String(email).toLowerCase());
-    }
-
-    function verifyPass(password){
-        //console.log((password.length > 8 ? true : false))
-        return (password.length >= 8 ? true : false);
-    }
-
     function handleEmailChange(event){
         setErrorMsg("");
-        setEmail((previousValue) => {
-            //debugger;
-            return previousValue = event.target.value;
+        setEmail((preValue) => {
+            return preValue = event.target.value;
         });
         //validating email format
         const result = verifyEmail(event.target.value);
         //set the result to the validation state
-        setValidation({...validation, validEmail: result });
+        setValidation((preValue) =>{
+            return {...preValue, validEmail: result }
+        });
     }
 
     function handlePasswordChange(event){
         setErrorMsg("");
-        setPassword(()=> {
-            return event.target.value;
+        setPassword((preValue)=> {
+            return preValue = event.target.value;
         });
         //validating password length
         const result = verifyPass(event.target.value);
         //seting the result to the validation state
-        setValidation({...validation, validPass: result});
+        setValidation((preValue) =>{
+            return {...preValue, validPass: result}
+        });
     }
 
     async function handleLoginClick(){
@@ -73,20 +64,17 @@ export default function Login(){
             email: email,
             password: password
         }
-
         try{
             const data = await post('users/login', userLogin);
             if(data){
                 //console.log(data);
                 setUserProfile(data);
-                
             }
 
         }catch(error){
             console.error(error);
             setErrorMsg(error.message);
         }
-
     }
 
     if(userProfile){
