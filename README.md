@@ -1,3 +1,17 @@
+# About this repository
+
+This is the frontend implementation of [Car Manager project](https://github.com/Yifei-G/car_manager).This project is made by REACT.js with hooks(after version v16.8).
+
+All the web components are based on Material-UI, a REACT implementation of Google's Material Design Style. The Page routing management is based on react-router-dom library.
+
+The current version of this project is not completed, some of the features are not implemented 100%. (Register user, login, user profile are still pending to to be completed.) 
+
+The project is created using Create React App, which already gives you a skeleton project structure and save your time to write your own webpack configuration.
+
+More information of  Create React App can be found below:
+
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
